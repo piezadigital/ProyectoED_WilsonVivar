@@ -1,6 +1,7 @@
 package benchmark;
 
 import algorithms.Fibonacci;
+import algorithms.Factorial;
 
 import java.io.FileWriter;
 import java.io.IOException;
@@ -76,6 +77,26 @@ public class Main {
 
             Medidor.imprimirFila("Fibonacci", "Recursivo", n, tiempoMs);
             csv.append(String.format("Fibonacci,Recursivo,%d,%d,%.6f%n", n, resultado, tiempoMs));
+        }
+
+        // ---- FACTORIAL BENCHMARK ----
+        System.out.println("\n" + "=".repeat(60));
+        System.out.println("  BENCHMARK FACTORIAL [O(n)]");
+        System.out.println("=".repeat(60));
+        Medidor.imprimirEncabezado();
+
+        for (int n : TAMANOS) {
+            final int fn = n;
+            
+            // Medir Iterativo
+            double tIter = Medidor.medir(() -> Factorial.iterativo(fn));
+            Medidor.imprimirFila("Factorial", "Iterativo", n, tIter);
+            csv.append(String.format("Factorial,Iterativo,%d,%.0f,%.6f%n", n, Factorial.iterativo(fn), tIter));
+
+            // Medir Recursivo
+            double tRec = Medidor.medir(() -> Factorial.recursivo(fn));
+            Medidor.imprimirFila("Factorial", "Recursivo", n, tRec);
+            csv.append(String.format("Factorial,Recursivo,%d,%.0f,%.6f%n", n, Factorial.recursivo(fn), tRec));
         }
 
         // ---- ANÁLISIS DE DIFERENCIA ----
