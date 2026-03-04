@@ -117,8 +117,8 @@ public class Main {
             Medidor.imprimirFila("Busqueda", "Iterativa", n, tBusqIter);
             csv.append(String.format("Busqueda,Iterativa,%d,%d,%.6f%n", n, BusquedaLineal.linealIterativa(datos, objetivo), tBusqIter));
 
-            // Recursivo (Limitado a 1000 para evitar error de Stack)
-            if (n <= 1000) {
+            // Recursivo (Limitado a 10000 para evitar error de Stack)
+            if (n <= 10000) {
                 double tBusqRec = Medidor.medir(() -> BusquedaLineal.linealRecursiva(datos, objetivo, 0));
                 Medidor.imprimirFila("Busqueda", "Recursiva", n, tBusqRec);
                 csv.append(String.format("Busqueda,Recursiva,%d,%d,%.6f%n", n, BusquedaLineal.linealRecursiva(datos, objetivo, 0), tBusqRec));
@@ -140,8 +140,8 @@ public class Main {
             Medidor.imprimirFila("Burbuja", "Iterativa", n, tBurbIter);
             csv.append(String.format("Burbuja,Iterativa,%d,%s,%.6f%n", n, "Completado", tBurbIter));
 
-            // Recursivo (Limitado a 500 para evitar error de Stack)
-            if (n <= 500) {
+            // Recursivo (Limitado a 10000 para evitar error de Stack)
+            if (n <= 10000) {
                 int[] copiaR = datos.clone();
                 double tBurbRec = Medidor.medir(() -> OrdenamientoBurbuja.burbujaRecursiva(copiaR, copiaR.length));
                 Medidor.imprimirFila("Burbuja", "Recursiva", n, tBurbRec);
