@@ -116,12 +116,12 @@ public class Main {
             // Iterativo
             double tBusqIter = Medidor.medir(() -> BusquedaLineal.linealIterativa(datos, objetivo));
             Medidor.imprimirFila("Busqueda", "Iterativa", n, tBusqIter);
-            csv.append(String.format("Busqueda,Iterativa,%d,%d,%.6f%n", n, BusquedaLineal.linealIterativa(datos, objetivo),tBusqIter)); //
+            csv.append(String.format("Busqueda,Iterativa,%d,%d,%.6f%n", n, BusquedaLineal.linealIterativa(datos, objetivo),tBusqIter));
 
             // Recursivo
             double tBusqRec = Medidor.medir(() -> BusquedaLineal.linealRecursiva(datos, objetivo, 0));
             Medidor.imprimirFila("Busqueda", "Recursiva", n, tBusqRec);
-            csv.append(String.format("Busqueda,Recursiva,%d,%d,%.6f%n", n, BusquedaLineal.linealRecursiva(datos, objetivo, 0), tBusqRec)); //
+            csv.append(String.format("Busqueda,Recursiva,%d,%d,%.6f%n", n, BusquedaLineal.linealRecursiva(datos, objetivo, 0), tBusqRec));
         }
 
         // ---- BENCHMARK ORDENAMIENTO BURBUJA ----
@@ -135,13 +135,13 @@ public class Main {
             int[] copiaI = datos.clone();
             double tBurbIter = Medidor.medir(() -> OrdenamientoBurbuja.burbujaIterativa(copiaI));
             Medidor.imprimirFila("Burbuja", "Iterativa", n, tBurbIter);
-            csv.append(String.format("Burbuja,Iterativa,%d,%s,%.6f%n", n, "Completado", tBurbIter)); //
+            csv.append(String.format("Burbuja,Iterativa,%d,%s,%.6f%n", n, "Completado", tBurbIter));
 
             // Recursivo
             int[] copiaR = datos.clone();
             double tBurbRec = Medidor.medir(() -> OrdenamientoBurbuja.burbujaRecursiva(copiaR, copiaR.length));
             Medidor.imprimirFila("Burbuja", "Recursiva", n, tBurbRec);
-            csv.append(String.format("Burbuja,Recursiva,%d,%s,%.6f%n", n, "Completado", tBurbRec)); //
+            csv.append(String.format("Burbuja,Recursiva,%d,%s,%.6f%n", n, "Completado", tBurbRec)); // El resultado es "Completado" porque no se muestra el arreglo ordenado para no afectar la medición del tiempo.
         }
 
         // ---- ESCALA MAYOR (Solo Iterativos para análisis de curva) ----
