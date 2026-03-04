@@ -2,6 +2,9 @@ package benchmark;
 
 import algorithms.Fibonacci;
 import algorithms.Factorial;
+import algorithms.BusquedaLineal;
+import algorithms.OrdenamientoBurbuja;
+import utils.GeneradorDatos;
 
 import java.io.FileWriter;
 import java.io.IOException;
@@ -15,10 +18,11 @@ import java.io.PrintWriter;
  * mide sus tiempos y exporta los resultados a un archivo CSV.
  *
  * CÓMO COMPILAR (desde la carpeta raíz del proyecto):
- *   javac -d out src/algorithms/Fibonacci.java src/benchmark/Medidor.java src/benchmark/Main.java
+ * javac -d out src/algorithms/Fibonacci.java src/benchmark/Medidor.java
+ * src/benchmark/Main.java
  *
  * CÓMO EJECUTAR:
- *   java -cp out benchmark.Main
+ * java -cp out benchmark.Main
  * ============================================================
  */
 public class Main {
@@ -31,10 +35,12 @@ public class Main {
      *
      * ITERATIVO: puede manejar n grandes (hasta ~92 con long)
      * RECURSIVO: limitado a n ≤ 30 por la complejidad O(2^n)
-     *   fib(30) → ~2.7 millones de llamadas
-     *   fib(40) → ~2.7 mil millones de llamadas (tarda minutos)
+     * fib(30) → ~2.7 millones de llamadas
+     * fib(40) → ~2.7 mil millones de llamadas (tarda minutos)
      */
-    private static final int[] TAMANOS = {5, 10, 15, 20, 25, 30};
+    private static final int[] TAMANOS = { 5, 10, 15, 20, 25, 30 };
+    /** Valores específicos para algoritmos de arreglos para notar la curva Big O */
+    private static final int[] TAMANOS_GRANDES = { 100, 500, 1000, 5000, 10000 };
 
     /** Ruta del archivo de resultados */
     private static final String CSV_PATH = "resultados/tiempos.csv";
@@ -87,7 +93,7 @@ public class Main {
 
         for (int n : TAMANOS) {
             final int fn = n;
-            
+
             // Medir Iterativo
             double tIter = Medidor.medir(() -> Factorial.iterativo(fn));
             Medidor.imprimirFila("Factorial", "Iterativo", n, tIter);
@@ -97,6 +103,63 @@ public class Main {
             double tRec = Medidor.medir(() -> Factorial.recursivo(fn));
             Medidor.imprimirFila("Factorial", "Recursivo", n, tRec);
             csv.append(String.format("Factorial,Recursivo,%d,%.0f,%.6f%n", n, Factorial.recursivo(fn), tRec));
+        }
+
+        // ---- BENCHMARK BÚSQUEDA LINEAL ----
+        System.out.println("\n  BENCHMARK BÚSQUEDA LINEAL");
+        Medidor.imprimirEncabezado();
+
+        for (int n : TAMANOS) { // Usa el arreglo {5, 10, 15, 20, 25, 30}
+            int[] datos = GeneradorDatos.generarArreglo(n);
+            int objetivo = -1;
+
+            // Iterativo
+            double tBusqIter = Medidor.medir(() -> BusquedaLineal.linealIterativa(datos, objetivo));
+            Medidor.imprimirFila("Busqueda", "Iterativa", n, tBusqIter);
+            csv.append(String.format("Busqueda,Iterativa,%d,%d,%.6f%n", n, BusquedaLineal.linealIterativa(datos, objetivo),tBusqIter)); //
+
+            // Recursivo
+            double tBusqRec = Medidor.medir(() -> BusquedaLineal.linealRecursiva(datos, objetivo, 0));
+            Medidor.imprimirFila("Busqueda", "Recursiva", n, tBusqRec);
+            csv.append(String.format("Busqueda,Recursiva,%d,%d,%.6f%n", n, BusquedaLineal.linealRecursiva(datos, objetivo, 0), tBusqRec)); //
+        }
+
+        // ---- BENCHMARK ORDENAMIENTO BURBUJA ----
+        System.out.println("\n  BENCHMARK ORDENAMIENTO BURBUJA");
+        Medidor.imprimirEncabezado();
+
+        for (int n : TAMANOS) {
+            int[] datos = GeneradorDatos.generarArreglo(n);
+
+            // Iterativo
+            int[] copiaI = datos.clone();
+            double tBurbIter = Medidor.medir(() -> OrdenamientoBurbuja.burbujaIterativa(copiaI));
+            Medidor.imprimirFila("Burbuja", "Iterativa", n, tBurbIter);
+            csv.append(String.format("Burbuja,Iterativa,%d,%s,%.6f%n", n, "Completado", tBurbIter)); //
+
+            // Recursivo
+            int[] copiaR = datos.clone();
+            double tBurbRec = Medidor.medir(() -> OrdenamientoBurbuja.burbujaRecursiva(copiaR, copiaR.length));
+            Medidor.imprimirFila("Burbuja", "Recursiva", n, tBurbRec);
+            csv.append(String.format("Burbuja,Recursiva,%d,%s,%.6f%n", n, "Completado", tBurbRec)); //
+        }
+
+        // ---- ESCALA MAYOR (Solo Iterativos para análisis de curva) ----
+        System.out.println("\n  ANÁLISIS DE ESCALA MAYOR (O(n) vs O(n^2))");
+        Medidor.imprimirEncabezado();
+        for (int n : TAMANOS_GRANDES) {
+            int[] datosG = GeneradorDatos.generarArreglo(n);
+
+            // Búsqueda
+            double tLineal = Medidor.medir(() -> BusquedaLineal.linealIterativa(datosG, -1));
+            Medidor.imprimirFila("Busqueda", "Iterativa-G", n, tLineal);
+            csv.append(String.format("Busqueda,Iterativa-G,%d,%d,%.6f%n", n, BusquedaLineal.linealIterativa(datosG, -1), tLineal));
+
+            // Burbuja
+            int[] copiaG = datosG.clone();
+            double tBurbuja = Medidor.medir(() -> OrdenamientoBurbuja.burbujaIterativa(copiaG));
+            Medidor.imprimirFila("Burbuja", "Iterativa-G", n, tBurbuja);
+            csv.append(String.format("Burbuja,Iterativa-G,%d,%s,%.6f%n", n, "Completado", tBurbuja));
         }
 
         // ---- ANÁLISIS DE DIFERENCIA ----
@@ -109,7 +172,7 @@ public class Main {
         for (int n : TAMANOS) {
             final int fn = n;
             double tIter = Medidor.medir(() -> Fibonacci.iterativo(fn));
-            double tRec  = Medidor.medir(() -> Fibonacci.recursivo(fn));
+            double tRec = Medidor.medir(() -> Fibonacci.recursivo(fn));
             double factor = (tIter > 0) ? tRec / tIter : 0;
 
             System.out.printf("n=%-6d | %-14.6f | %-14.6f | %.1fx más lento%n",
